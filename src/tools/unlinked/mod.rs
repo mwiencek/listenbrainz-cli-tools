@@ -5,7 +5,7 @@ use listenbrainz_utils::readers::ListenReaderBuilder;
 
 use crate::models::messy_recording::MessyRecording;
 
-pub fn unlinked_command(username: &str) {
+pub fn unlinked_command(username: &str, musicbrainz_search: bool) {
     println!("Fetching unlinkeds for user {}", username);
     let unlinked = get_all_unlinked_of_user(username);
 

@@ -16,13 +16,17 @@ pub enum Commands {
         /// Name of the user to fetch unlinked listen from
         #[arg(short, long)]
         username: String,
+
+        /// Add links to search MusicBrainz for this recording
+        #[arg(short, long)]
+        musicbrainz: bool,
     },
 }
 
 impl Commands {
     pub fn run(&self) {
         match self {
-            Commands::Unlinked { username } => unlinked_command(username),
+            Commands::Unlinked { username, musicbrainz } => unlinked_command(username, *musicbrainz),
         }
     }
 }
