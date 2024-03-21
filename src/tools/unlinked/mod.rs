@@ -2,7 +2,7 @@
 use color_eyre::eyre::Context;
 use listenbrainz::raw::{response::UserListensListen, Client};
 
-use crate::{models::messy_recording::MessyRecording, utils::ListenReaderBuilder};
+use crate::{models::messy_recording::MessyRecording, utils::{cli_paging::CLIPager, ListenReaderBuilder}};
 
 pub fn unlinked_command(username: &str) {
     println!("Fetching unlinkeds for user {}", username);
@@ -30,26 +30,33 @@ pub fn unlinked_command(username: &str) {
 
     println!("Done! Here are {}'s unlinked listens:", username);
 
+    let pager = CLIPager::new(5);
     messy_recordings.iter().for_each(|record| {
-        println!(
-            "({}) {} - {}",
-            record.associated_listens.len(),
-            record.get_recording_name().unwrap_or_default(),
-            record.get_artist_name().unwrap_or_default()
-        );
+        pager.execute(|| {
+            println!(
+                "({}) {} - {}",
+                record.associated_listens.len(),
+                record.get_recording_name().unwrap_or_default(),
+                record.get_artist_name().unwrap_or_default()
+            );
+    
+            let latest_listen = record.get_latest_listen();
+    
+            println!(
+                "    -> https://listenbrainz.org/user/{}/?min_ts={}&max_ts={}",
+                username,
+                latest_listen
+                    .map(|listen| listen.listened_at - 1)
+                    .unwrap_or(0),
+                latest_listen
+                    .map(|listen| listen.listened_at + 1)
+                    .unwrap_or(0)
+            );
 
-        let latest_listen = record.get_latest_listen();
+            true
+        })
 
-        println!(
-            "    -> https://listenbrainz.org/user/{}/?min_ts={}&max_ts={}",
-            username,
-            latest_listen
-                .map(|listen| listen.listened_at - 1)
-                .unwrap_or(0),
-            latest_listen
-                .map(|listen| listen.listened_at + 1)
-                .unwrap_or(0)
-        )
+
     });
 
     println!("Total: {} unlinked recordings", unlinked_count)
