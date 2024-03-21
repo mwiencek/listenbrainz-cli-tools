@@ -3,18 +3,21 @@ use inquire::{InquireError, Select};
 #[derive(Debug)]
 pub struct CLIPager {
     count: i32,
-    max_count: i32
+    max_count: i32,
 }
 
 impl CLIPager {
     pub fn new(max_count: i32) -> Self {
         Self {
             count: 0,
-            max_count
+            max_count,
         }
     }
 
-    pub fn execute(&mut self, f: fn() -> bool) {
+    pub fn execute<F>(&mut self, f: F) -> bool
+    where
+        F: Fn(),
+    {
         f();
 
         self.count += 1;
@@ -23,17 +26,18 @@ impl CLIPager {
             if Self::ask_continue() {
                 self.count = 0;
             } else {
-                return;
+                return false;
             }
         }
+
+        true
     }
 
     fn ask_continue() -> bool {
         loop {
             let options = vec!["Next", "Exit"];
 
-            let ans: Result<&str, InquireError> =
-                Select::new("What's your favorite fruit?", options).prompt();
+            let ans: Result<&str, InquireError> = Select::new("", options).prompt();
 
             match ans {
                 Ok(choice) => {
