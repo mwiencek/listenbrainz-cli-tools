@@ -18,6 +18,9 @@ color-eyre = "0.6.3"
 rust_decimal = "1.33.1"
 clap = { version = "4.5.3", features = ["unicode", "wrap_help", "derive"]}
 clap_complete = "4.5.1"
+moka = { version = "0.12.5", features = ["sync"] }
+serde = { version = "1.0.197", features = ["rc", "derive"] }
+serde_json = "1.0.114"
 
 # The profile that 'cargo dist' will build with
 [profile.dist]

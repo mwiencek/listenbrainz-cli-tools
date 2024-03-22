@@ -1,5 +1,6 @@
 use listenbrainz::raw::response::UserListensListen;
 
+pub mod cache;
 pub mod cli;
 pub mod messy_recording;
 
