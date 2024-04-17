@@ -41,6 +41,7 @@ impl UpdateCachedEntity for Release {
             packaging_id: new.packaging_id.or(self.packaging_id),
             status_id: new.status_id.or(self.status_id),
             title: new.title,
+            release_group: new.release_group.or(self.release_group)
         }
     }
 }

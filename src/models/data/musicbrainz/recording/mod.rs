@@ -1,5 +1,8 @@
+pub mod converters;
+pub mod getters;
 use crate::models::api::FetchAPI;
 
+use clap::builder::Str;
 use color_eyre::eyre::{eyre, Context, OptionExt};
 use color_eyre::Result;
 use serde::{Deserialize, Serialize};
@@ -40,14 +43,6 @@ pub struct Recording {
     pub id: String,
     pub title: String,
     pub artist_credit: Option<ArtistCredits>,
+    releases: Option<Vec<String>>
 }
 
-impl From<musicbrainz_rs::entity::recording::Recording> for Recording {
-    fn from(recording: musicbrainz_rs::entity::recording::Recording) -> Self {
-        Self {
-            id: recording.id,
-            title: recording.title,
-            artist_credit: recording.artist_credit.map(|coll| coll.into()),
-        }
-    }
-}

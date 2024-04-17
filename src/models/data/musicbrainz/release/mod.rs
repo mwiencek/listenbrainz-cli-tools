@@ -1,3 +1,4 @@
+use musicbrainz_rs::entity::release_group::ReleaseGroup;
 use serde::{Deserialize, Serialize};
 
 use self::media::Media;
@@ -23,7 +24,7 @@ pub struct Release {
     packaging_id: Option<String>,
     //packaging: Option<ReleasePackaging>,
     //relations: Option<Vec<Relation>>,
-    //release_group: Option<ReleaseGroup>,
+    release_group: Option<String>,
     //artist_credit: Option<Vec<ArtistCredit>>,
     media: Option<Vec<Media>>,
     //label_info: Option<Vec<LabelInfo>>,

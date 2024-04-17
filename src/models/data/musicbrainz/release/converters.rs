@@ -17,6 +17,7 @@ impl From<ReleaseMS> for Release {
             packaging_id: value.packaging_id,
             status_id: value.status_id,
             title: value.title,
+            release_group: value.release_group.map(|rg| rg.id)
         }
     }
 }

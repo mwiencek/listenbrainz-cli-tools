@@ -1,3 +1,4 @@
+pub mod release_group;
 use std::ops::Deref;
 
 pub mod artist;
