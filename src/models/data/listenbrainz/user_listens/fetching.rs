@@ -83,15 +83,9 @@ impl UserListens {
             )?
             .payload;
 
-            unlinkeds.remove_timerange(
-                &result
-                    .get_date_of_oldest_listen_of_payload()
-                    .unwrap_or(Utc::now()),
-                &result
-                    .get_date_of_latest_listen_of_payload()
-                    .unwrap_or(Utc::now()),
-                true,
-            );
+            unlinkeds.remove_after(&result
+                .get_date_of_oldest_listen_of_payload()
+                .unwrap_or(Utc::now()), false);
 
             progress_bar.set_position((start_count - unlinkeds.len()).try_into().unwrap());
         }

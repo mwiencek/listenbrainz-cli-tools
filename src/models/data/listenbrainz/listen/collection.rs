@@ -58,6 +58,28 @@ impl ListenCollection {
         })
     }
 
+    /// Remove everything after a date
+    pub fn remove_after(&mut self, date: &DateTime<Utc>, inclusive: bool) {
+        self.data.retain(|listen| {
+            if inclusive {
+                listen.get_listened_at() >= date
+            } else {
+                listen.get_listened_at() > date
+            }
+        })
+    }
+
+    /// Remove everything before a date
+    pub fn remove_before(&mut self, date: &DateTime<Utc>, inclusive: bool) {
+        self.data.retain(|listen| {
+            if inclusive {
+                listen.get_listened_at() <= date
+            } else {
+                listen.get_listened_at() < date
+            }
+        })
+    }
+
     /// Add a listen to the collection.
     pub fn push(&mut self, listen: Arc<Listen>) {
         self.data.push(listen);
