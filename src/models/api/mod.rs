@@ -18,9 +18,9 @@ where
     V: DeserializeOwned + Serialize + UpdateCachedEntity + FetchAPI<K, V>,
 {
     /// Get the data from the cache, or call the API. Any request is deduplicated
-    fn get_cached_or_fetch(key: &K) -> impl Future<Output = color_eyre::Result<V>> {
+    fn get_cached_or_fetch(key: K) -> impl Future<Output = color_eyre::Result<V>> {
         async {
-            match Self::get_cache().get(key)? {
+            match Self::get_cache().get(&key)? {
                 Some(val) => Ok(val),
                 None => Self::get_cache().get_or_fetch(key).await,
             }

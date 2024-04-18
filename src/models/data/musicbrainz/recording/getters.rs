@@ -7,10 +7,10 @@ impl Recording {
         let Some(releases) = self.releases.clone() else {return Ok(None);};
 
         let tasks = releases.into_iter().map(|release_id| {
-            tokio::spawn(Release::get_cached_or_fetch(&release_id))
+            tokio::spawn(Release::get_cached_or_fetch(release_id))
         } );
 
-        let tasks_awaited = Vec::new();
+        let mut tasks_awaited = Vec::new();
         for task in tasks {
             tasks_awaited.push(task.await??)
         }

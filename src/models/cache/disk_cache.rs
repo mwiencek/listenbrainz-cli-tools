@@ -68,16 +68,16 @@ where
         .clone();
     }
 
-    pub async fn get_or_fetch(&self, key: &K) -> color_eyre::Result<V> {
-        let semaphore = self.get_semaphore(key);
+    pub async fn get_or_fetch(&self, key: K) -> color_eyre::Result<V> {
+        let semaphore = self.get_semaphore(&key);
         let permit = semaphore.acquire().await.context("Couldn't get permit")?;
 
-        let maybe_data = self.get(key)?;
+        let maybe_data = self.get(&key)?;
         if let Some(data) = maybe_data {
             return Ok(data);
         }
 
-        self.fetch(key, permit).await
+        self.fetch(&key, permit).await
     }
 
     /// Fetch an item, bypassing the cache. Only one request is allowed at a time, so a Semaphore permit is required. If none is provided, it will get assigned automatically.
