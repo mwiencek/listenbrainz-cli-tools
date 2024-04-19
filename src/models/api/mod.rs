@@ -5,20 +5,20 @@ use std::{fmt::Display, future::Future};
 use super::cache::traits::has_cache::HasCache;
 use super::cache::traits::merge::UpdateCachedEntity;
 
-pub trait FetchAPI<K, V> {
+pub trait HasFetchApi<K> {
     /// Fetch an item an put it into the cache
     ///
     /// This operation isn't deduplicated! Refer to the Diskcache for safe call
-    fn fetch_and_insert(key: &K) -> impl Future<Output = color_eyre::Result<V>>;
+    fn fetch_and_insert(key: &K) -> impl Future<Output = color_eyre::Result<Self>>;
 }
 
-pub trait GetFromCacheOrFetch<K, V>: HasCache<K, V> + FetchAPI<K, V>
+pub trait HasCacheAndFetchApi<K>: HasCache<K> + HasFetchApi<K>
 where
     K: Eq + Hash + Clone + Display,
-    V: DeserializeOwned + Serialize + UpdateCachedEntity + FetchAPI<K, V>,
+    Self: DeserializeOwned + Serialize + UpdateCachedEntity + HasFetchApi<K>,
 {
     /// Get the data from the cache, or call the API. Any request is deduplicated
-    fn get_cached_or_fetch(key: &K) -> impl Future<Output = color_eyre::Result<V>> {
+    fn get_cached_or_fetch(key: &K) -> impl Future<Output = color_eyre::Result<Self>> {
         async {
             match Self::get_cache().get(key)? {
                 Some(val) => Ok(val),
@@ -28,10 +28,9 @@ where
     }
 }
 
-impl<K, V, T> GetFromCacheOrFetch<K, V> for T
+impl<K, T> HasCacheAndFetchApi<K> for T
 where
     K: Eq + Hash + Clone + Display,
-    V: DeserializeOwned + Serialize + UpdateCachedEntity + FetchAPI<K, V>,
-    T: HasCache<K, V> + FetchAPI<K, V>,
+    T: DeserializeOwned + Serialize + UpdateCachedEntity + HasFetchApi<K> + HasCache<K>,
 {
 }

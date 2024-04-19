@@ -2,13 +2,13 @@ use color_eyre::eyre::{Context, Ok};
 use musicbrainz_rs::entity::recording::Recording as RecordingMS;
 use musicbrainz_rs::Fetch;
 
-use crate::models::api::FetchAPI;
+use crate::models::api::HasFetchApi;
 use crate::models::cache::cached_trait::CacheFromMusicbrainzAutoId;
 use crate::models::cache::global_cache::GlobalCache;
 use crate::models::data::musicbrainz::recording::Recording;
 use crate::utils::println_mus;
 
-impl FetchAPI<String, Recording> for Recording {
+impl HasFetchApi<String, Recording> for Recording {
     fn fetch_and_insert(
         key: &String,
     ) -> impl std::future::Future<Output = color_eyre::Result<Recording>> {

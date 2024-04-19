@@ -3,6 +3,7 @@ use std::sync::Arc;
 use cached::DiskCacheError;
 use once_cell::sync::Lazy;
 
+use crate::models::data::listenbrainz::listen::Listen;
 use crate::models::data::listenbrainz::user_listens::UserListens;
 use crate::models::data::musicbrainz::artist::Artist;
 use crate::models::data::musicbrainz::recording::Recording;
@@ -19,7 +20,8 @@ pub struct StaticCache {
     pub(super) releases: Lazy<Arc<DiskCacheWrapper<String, Release>>>,
 
     // Listenbrainz Caches
-    pub(super) listens: Lazy<Arc<DiskCacheWrapper<String, UserListens>>>,
+    pub(super) listens: Lazy<Arc<DiskCacheWrapper<String, Listen>>>,
+    pub(super) user_listens: Lazy<Arc<DiskCacheWrapper<String, UserListens>>>,
 }
 
 impl StaticCache {
@@ -30,6 +32,7 @@ impl StaticCache {
             releases: Lazy::new(|| Arc::new(DiskCacheWrapper::new("releases"))),
 
             listens: Lazy::new(|| Arc::new(DiskCacheWrapper::new("listens"))),
+            user_listens: Lazy::new(|| Arc::new(DiskCacheWrapper::new("user_listens"))),
         }
     }
 
@@ -57,7 +60,11 @@ impl StaticCache {
         self.releases.clone()
     }
 
-    pub fn get_listen_cache(&self) -> Arc<DiskCacheWrapper<String, UserListens>> {
+    pub fn get_user_listen_cache(&self) -> Arc<DiskCacheWrapper<String, UserListens>> {
+        self.user_listens.clone()
+    }
+
+    pub fn get_listen_cache(&self) -> Arc<DiskCacheWrapper<String, Listen>> {
         self.listens.clone()
     }
 }

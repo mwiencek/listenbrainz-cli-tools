@@ -1,6 +1,6 @@
 use indicatif::ProgressBar;
 
-use crate::models::api::GetFromCacheOrFetch;
+use crate::models::api::HasCacheAndFetchApi;
 use crate::models::cache::global_cache::GlobalCache;
 use crate::models::data::musicbrainz::artist::Artist;
 use crate::models::stats::artist_stats::ArtistStatsSorter;

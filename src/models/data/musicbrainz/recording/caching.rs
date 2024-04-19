@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::models::api::GetFromCacheOrFetch;
+use crate::models::api::HasCacheAndFetchApi;
 use crate::models::cache::cached_trait::CacheFromMusicbrainz;
 use crate::models::cache::disk_cache::DiskCacheWrapper;
 use crate::models::cache::global_cache::GlobalCache;

@@ -7,7 +7,7 @@ use color_eyre::eyre::Context;
 use serde::{de::DeserializeOwned, Serialize};
 use tokio::sync::{Semaphore, SemaphorePermit};
 
-use crate::models::api::FetchAPI;
+use crate::models::api::HasFetchApi;
 
 use super::{traits::merge::UpdateCachedEntity, CACHE_LOCATION};
 use std::hash::Hash;
@@ -20,7 +20,7 @@ pub struct DiskCacheWrapper<K, V> {
 impl<K, V> DiskCacheWrapper<K, V>
 where
     K: Display + Eq + Hash + Clone,
-    V: Serialize + DeserializeOwned + UpdateCachedEntity + FetchAPI<K, V>,
+    V: Serialize + DeserializeOwned + UpdateCachedEntity,
 {
     pub fn new(name: &str) -> Self {
         Self {
@@ -67,7 +67,22 @@ where
             .expect("Couldn't get a new semaphore"))
         .clone();
     }
+}
 
+// For fetchable entities
+impl<K, V> DiskCacheWrapper<K, V>
+where
+    K: Display + Eq + Hash + Clone,
+    V: Serialize + DeserializeOwned + UpdateCachedEntity + HasFetchApi<K>,
+{
+    /// Get an item from the cache, but if it isn't present, fetch the api for it
+    /// 
+    /// Duplicate requests will get deduplicated
+    /// 
+    /// # See also
+    /// Only get -> [`DiskCacheWrapper::get`]
+    /// 
+    /// Only fetch -> [`DiskCacheWrapper::fetch`]
     pub async fn get_or_fetch(&self, key: &K) -> color_eyre::Result<V> {
         let semaphore = self.get_semaphore(key);
         let permit = semaphore.acquire().await.context("Couldn't get permit")?;

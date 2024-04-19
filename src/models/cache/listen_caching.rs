@@ -9,12 +9,12 @@ use super::static_cache::StaticCache;
 impl StaticCache {
     /// Retrieve the user listens of a specific user
     pub fn get_user_listens(&self, key: &str) -> Result<Option<UserListens>, DiskCacheError> {
-        self.listens.get(&key.to_lowercase())
+        self.user_listens.get(&key.to_lowercase())
     }
 
     pub fn get_user_listens_or_empty(&self, key: &str) -> Result<UserListens, DiskCacheError> {
         Ok(self
-            .listens
+            .user_listens
             .get(&key.to_lowercase())?
             .unwrap_or(UserListens::new(key)))
     }
@@ -23,7 +23,7 @@ impl StaticCache {
         &self,
         user_listens: UserListens,
     ) -> Result<Option<UserListens>, DiskCacheError> {
-        self.listens
+        self.user_listens
             .set_or_update(user_listens.get_user().to_string(), user_listens)
     }
 

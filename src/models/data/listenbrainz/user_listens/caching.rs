@@ -11,10 +11,10 @@ impl UpdateCachedEntity for UserListens {
     }
 }
 
-impl HasCache<String, UserListens> for UserListens {
+impl HasCache<String> for UserListens {
     fn get_cache(
     ) -> std::sync::Arc<crate::models::cache::disk_cache::DiskCacheWrapper<String, UserListens>>
     {
-        GlobalCache::new().get_listen_cache()
+        GlobalCache::new().get_user_listen_cache()
     }
 }

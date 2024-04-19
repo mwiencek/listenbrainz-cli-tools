@@ -4,7 +4,7 @@ use indicatif::ProgressBar;
 use listenbrainz::raw::response::UserListensResponse;
 use listenbrainz::raw::Client;
 
-use crate::models::api::FetchAPI;
+use crate::models::api::HasFetchApi;
 use crate::models::cache::global_cache::GlobalCache;
 use crate::utils::extensions::UserListensPayloadExt;
 use crate::utils::{println_lis, Logger};
@@ -105,7 +105,7 @@ impl UserListens {
     }
 }
 
-impl FetchAPI<String, UserListens> for UserListens {
+impl HasFetchApi<String> for UserListens {
     async fn fetch_and_insert(key: &String) -> color_eyre::Result<UserListens> {
         GlobalCache::new().get_user_listens_with_refresh(key)
     }

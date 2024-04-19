@@ -1,7 +1,8 @@
+pub mod caching;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::models::api::GetFromCacheOrFetch;
+use crate::models::api::HasCacheAndFetchApi;
 use crate::models::data::listenbrainz::mapping_data::MappingData;
 use crate::models::data::musicbrainz::recording::Recording;
 
