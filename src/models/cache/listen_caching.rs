@@ -1,6 +1,7 @@
 use cached::{DiskCacheError, IOCached};
 use listenbrainz::raw::response::UserListensPayload;
 
+use crate::models::data::listenbrainz::listen_request::FetchAnchor;
 use crate::models::data::listenbrainz::user_listens::UserListens;
 use crate::utils::println_cli;
 
@@ -42,6 +43,7 @@ impl StaticCache {
     pub fn insert_lb_listen_payload(
         &self,
         payload: UserListensPayload,
+        anchor: FetchAnchor
     ) -> Result<Option<UserListens>, DiskCacheError> {
         let mut user_listens = self.get_user_listens_or_empty(&payload.user_id)?;
 

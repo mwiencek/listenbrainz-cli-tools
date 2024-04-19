@@ -42,19 +42,25 @@ impl ListenCollection {
             .collect()
     }
 
-    /// Remove all the listens in between two dates.
+    /// Remove all the listens in between two dates. Start must be earlier than end
     pub fn remove_timerange(
         &mut self,
         start: &DateTime<Utc>,
         end: &DateTime<Utc>,
-        inclusive: bool,
+        inclusive_start: bool,
+        inclusive_end: bool,
     ) {
         self.data.retain(|listen| {
-            if inclusive {
-                listen.get_listened_at() < start || end < listen.get_listened_at()
-            } else {
-                listen.get_listened_at() <= start || end <= listen.get_listened_at()
-            }
+            let start_filter = match inclusive_start {
+                true => listen.get_listened_at() <= start,
+                false => listen.get_listened_at() < start,
+            };
+            let end_filter = match inclusive_end {
+                true => listen.get_listened_at() >= start,
+                false => listen.get_listened_at() > start,
+            };
+
+            start_filter || end_filter
         })
     }
 

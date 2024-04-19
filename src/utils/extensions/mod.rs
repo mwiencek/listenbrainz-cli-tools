@@ -34,6 +34,9 @@ pub impl UserListensPayload {
         self.get_latest_payload_listen()
             .and_then(|listen| Utc.timestamp_opt(listen.listened_at, 0).single())
     }
+
+    /// Return the oldest date + 1 sec. The tail end can get cut off and the payload may not have all the listens at that timestamp, so it's preferable to cut it off
+    fn get_safe_oldest_date(&self)
 }
 
 #[ext]

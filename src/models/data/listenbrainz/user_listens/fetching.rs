@@ -11,15 +11,27 @@ use super::UserListens;
 
 impl UserListens {
     /// Fetch the most listens it can, that have been listened before the provided date. Additionally save them to the cache
+    ///
+    /// If inclusive is set to true, it will also fetch the listen at the date provided. If not, the first listen will be at `N - 1sec`
     pub fn fetch_before(
         user: &str,
-        before_date: DateTime<Utc>,
+        mut before_date: DateTime<Utc>,
+        inclusive: bool,
     ) -> color_eyre::Result<UserListensResponse> {
-        println_lis(format!(
-            "Getting listens from before: {} ({})",
-            before_date,
-            before_date.timestamp()
-        ));
+        if inclusive {
+            before_date = before_date + TimeDelta::new(1, 0).unwrap();
+            println_lis(format!(
+                "Getting listens made at and before: {} ({})",
+                before_date,
+                before_date.timestamp()
+            ));
+        } else {
+            println_lis(format!(
+                "Getting listens made before: {} ({})",
+                before_date,
+                before_date.timestamp()
+            ));
+        }
 
         let result =
             Client::new().user_listens(user, None, Some(before_date.timestamp()), Some(999))?;
@@ -73,19 +85,22 @@ impl UserListens {
         Logger::set_global_overide(progress_bar.clone());
 
         while unlinkeds.len() > 0 {
+            // We get the refresh target for the current operation
             let refresh_target = unlinkeds
                 .get_latest_listen()
                 .expect("Couldn't fetch listen");
 
-            let result = Self::fetch_before(
-                username,
-                refresh_target.listened_at + TimeDelta::new(1, 0).unwrap(),
-            )?
-            .payload;
+            // We fetch the updated listens
+            let result = Self::fetch_before(username, refresh_target.listened_at, true)?.payload;
 
-            unlinkeds.remove_after(&result
-                .get_date_of_oldest_listen_of_payload()
-                .unwrap_or(Utc::now()), false);
+            unlinkeds.remove_timerange(
+                    refresh_target.get_listened_at(),
+                    
+                &result
+                    .get_date_of_oldest_listen_of_payload()
+                    .unwrap_or(Utc::now()),
+                false,
+            );
 
             progress_bar.set_position((start_count - unlinkeds.len()).try_into().unwrap());
         }
