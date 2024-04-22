@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::utils::extensions::UserListensPayloadExt;
 
 use super::listen::collection::ListenCollection;
-use super::listen::Listen;
+use super::listen::{Listen, ListenId};
 
 pub mod caching;
 pub mod fetching;
@@ -15,15 +15,24 @@ pub mod fetching;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserListens {
     username: String,
-    listens: ListenCollection,
+    listens: Vec<ListenId>,
 }
 
 impl UserListens {
     pub fn new(user: &str) -> Self {
         Self {
             username: user.to_lowercase(),
-            listens: ListenCollection::new(),
+            listens: Vec::new(),
         }
+    }
+
+    pub fn get_listens(&self) -> ListenCollection {
+        let out = Vec::new();
+
+        for id in self.listens {
+            
+        }
+        
     }
 
     pub fn get_user(&self) -> &str {

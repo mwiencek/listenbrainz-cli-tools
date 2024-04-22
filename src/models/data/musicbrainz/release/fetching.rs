@@ -6,7 +6,7 @@ use crate::{models::api::HasFetchApi, utils::println_mus};
 use color_eyre::eyre::Context;
 use musicbrainz_rs::{entity::release::Release as ReleaseMS, Fetch};
 
-impl HasFetchApi<String, Release> for Release {
+impl HasFetchApi<String> for Release {
     fn fetch_and_insert(
         key: &String,
     ) -> impl std::future::Future<Output = color_eyre::Result<Release>> {

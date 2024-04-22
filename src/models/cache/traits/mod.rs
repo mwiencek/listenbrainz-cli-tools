@@ -1,7 +1,7 @@
-pub mod has_cache_and_fetch_api;
-pub mod has_id_and_cache;
-pub mod has_id;
 pub mod has_cache;
+pub mod has_cache_and_fetch_api;
+pub mod has_id;
+pub mod has_id_and_cache;
 use color_eyre::Result;
 
 pub mod merge;

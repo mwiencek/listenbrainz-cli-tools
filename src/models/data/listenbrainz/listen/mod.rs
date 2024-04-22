@@ -11,6 +11,9 @@ use super::messybrainz::MessyBrainzData;
 pub mod collection;
 pub mod convertion;
 
+/// The id of a listen. It's a composite of (Username, listened_at, msid)
+pub type ListenId = (String, DateTime<Utc>, String);
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Listen {
     /// The username of the user who listened to it

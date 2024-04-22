@@ -8,7 +8,7 @@ use crate::models::cache::global_cache::GlobalCache;
 use crate::models::data::musicbrainz::recording::Recording;
 use crate::utils::println_mus;
 
-impl HasFetchApi<String, Recording> for Recording {
+impl HasFetchApi<String> for Recording {
     fn fetch_and_insert(
         key: &String,
     ) -> impl std::future::Future<Output = color_eyre::Result<Recording>> {

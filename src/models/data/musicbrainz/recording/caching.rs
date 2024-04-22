@@ -71,7 +71,7 @@ impl UpdateCachedEntity for Recording {
     }
 }
 
-impl HasCache<String, Recording> for Recording {
+impl HasCache<String> for Recording {
     fn get_cache() -> Arc<DiskCacheWrapper<String, Recording>> {
         GlobalCache::new().get_recording_cache()
     }

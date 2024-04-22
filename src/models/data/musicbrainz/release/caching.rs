@@ -45,7 +45,7 @@ impl UpdateCachedEntity for Release {
     }
 }
 
-impl HasCache<String, Release> for Release {
+impl HasCache<String> for Release {
     fn get_cache() -> Arc<DiskCacheWrapper<String, Release>> {
         GlobalCache::new().get_release_cache()
     }

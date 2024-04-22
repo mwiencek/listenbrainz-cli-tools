@@ -8,7 +8,7 @@ use crate::models::cache::global_cache::GlobalCache;
 use crate::models::data::musicbrainz::artist::Artist;
 use crate::utils::println_mus;
 
-impl HasFetchApi<String, Artist> for Artist {
+impl HasFetchApi<String> for Artist {
     fn fetch_and_insert(
         key: &String,
     ) -> impl std::future::Future<Output = color_eyre::Result<Artist>> {

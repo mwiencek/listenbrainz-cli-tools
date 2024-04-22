@@ -35,7 +35,7 @@ impl UpdateCachedEntity for Artist {
     }
 }
 
-impl HasCache<String, Artist> for Artist {
+impl HasCache<String> for Artist {
     fn get_cache() -> Arc<DiskCacheWrapper<String, Artist>> {
         GlobalCache::new().get_artist_cache()
     }

@@ -5,7 +5,10 @@ use std::{fmt::Display, future::Future};
 use super::cache::traits::has_cache::HasCache;
 use super::cache::traits::merge::UpdateCachedEntity;
 
-pub trait HasFetchApi<K> {
+pub trait HasFetchApi<K>
+where
+    Self: Sized,
+{
     /// Fetch an item an put it into the cache
     ///
     /// This operation isn't deduplicated! Refer to the Diskcache for safe call

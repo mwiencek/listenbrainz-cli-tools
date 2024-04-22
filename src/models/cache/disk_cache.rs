@@ -76,12 +76,12 @@ where
     V: Serialize + DeserializeOwned + UpdateCachedEntity + HasFetchApi<K>,
 {
     /// Get an item from the cache, but if it isn't present, fetch the api for it
-    /// 
+    ///
     /// Duplicate requests will get deduplicated
-    /// 
+    ///
     /// # See also
     /// Only get -> [`DiskCacheWrapper::get`]
-    /// 
+    ///
     /// Only fetch -> [`DiskCacheWrapper::fetch`]
     pub async fn get_or_fetch(&self, key: &K) -> color_eyre::Result<V> {
         let semaphore = self.get_semaphore(key);
