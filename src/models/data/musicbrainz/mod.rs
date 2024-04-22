@@ -1,3 +1,5 @@
+pub mod EntityMBIDType;
+pub mod relation;
 use std::ops::Deref;
 
 pub mod artist;
