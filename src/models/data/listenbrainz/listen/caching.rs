@@ -1,11 +1,14 @@
 use chrono::{DateTime, Utc};
 
-use crate::models::cache::traits::{has_id::HasID, merge::UpdateCachedEntity};
+use crate::models::cache::{
+    global_cache::GlobalCache,
+    traits::{has_cache::HasCache, has_id::HasID, merge::UpdateCachedEntity},
+};
 
-use super::Listen;
+use super::{Listen, ListenId};
 
-impl HasID<(String, DateTime<Utc>, String)> for Listen {
-    fn get_id(&self) -> (String, DateTime<Utc>, String) {
+impl HasID<ListenId> for Listen {
+    fn get_id(&self) -> ListenId {
         (
             self.user.to_owned(),
             *self.get_listened_at(),
@@ -17,5 +20,12 @@ impl HasID<(String, DateTime<Utc>, String)> for Listen {
 impl UpdateCachedEntity for Listen {
     fn update_entity(self, new: Self) -> Self {
         new
+    }
+}
+
+impl HasCache<ListenId> for Listen {
+    fn get_cache(
+    ) -> std::sync::Arc<crate::models::cache::disk_cache::DiskCacheWrapper<ListenId, Self>> {
+        GlobalCache::new().get_listen_cache()
     }
 }

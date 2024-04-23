@@ -1,3 +1,4 @@
+pub mod listenbrainz;
 use directories::BaseDirs;
 use once_cell::sync::Lazy;
 use std::path::PathBuf;

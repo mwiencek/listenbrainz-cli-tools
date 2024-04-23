@@ -3,7 +3,7 @@ use std::sync::Arc;
 use cached::DiskCacheError;
 use once_cell::sync::Lazy;
 
-use crate::models::data::listenbrainz::listen::Listen;
+use crate::models::data::listenbrainz::listen::{Listen, ListenId};
 use crate::models::data::listenbrainz::user_listens::UserListens;
 use crate::models::data::musicbrainz::artist::Artist;
 use crate::models::data::musicbrainz::recording::Recording;
@@ -14,19 +14,24 @@ use super::disk_cache::DiskCacheWrapper;
 pub(crate) static STATIC_CACHE: Lazy<Arc<StaticCache>> = Lazy::new(|| Arc::new(StaticCache::new()));
 
 pub struct StaticCache {
+    // Internal
+    pub(super) mbid_alias: Lazy<Arc<DiskCacheWrapper<String, String>>>,
+
     // MusicBrainz Caches
     pub(super) artists: Lazy<Arc<DiskCacheWrapper<String, Artist>>>,
     pub(super) recordings: Lazy<Arc<DiskCacheWrapper<String, Recording>>>,
     pub(super) releases: Lazy<Arc<DiskCacheWrapper<String, Release>>>,
 
     // Listenbrainz Caches
-    pub(super) listens: Lazy<Arc<DiskCacheWrapper<String, Listen>>>,
+    pub(super) listens: Lazy<Arc<DiskCacheWrapper<ListenId, Listen>>>,
     pub(super) user_listens: Lazy<Arc<DiskCacheWrapper<String, UserListens>>>,
 }
 
 impl StaticCache {
     pub fn new() -> Self {
         Self {
+            mbid_alias: Lazy::new(|| Arc::new(DiskCacheWrapper::new("mbid_alias"))),
+
             recordings: Lazy::new(|| Arc::new(DiskCacheWrapper::new("recordings"))),
             artists: Lazy::new(|| Arc::new(DiskCacheWrapper::new("artists"))),
             releases: Lazy::new(|| Arc::new(DiskCacheWrapper::new("releases"))),
@@ -64,7 +69,7 @@ impl StaticCache {
         self.user_listens.clone()
     }
 
-    pub fn get_listen_cache(&self) -> Arc<DiskCacheWrapper<String, Listen>> {
+    pub fn get_listen_cache(&self) -> Arc<DiskCacheWrapper<ListenId, Listen>> {
         self.listens.clone()
     }
 }

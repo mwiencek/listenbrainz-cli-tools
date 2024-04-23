@@ -1,4 +1,9 @@
 pub mod caching;
+pub mod fetching;
+
+use core::fmt;
+use std::fmt::{Display, Formatter};
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +17,14 @@ pub mod collection;
 pub mod convertion;
 
 /// The id of a listen. It's a composite of (Username, listened_at, msid)
-pub type ListenId = (String, DateTime<Utc>, String);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
+pub struct ListenId(String, DateTime<Utc>, String);
+
+impl Display for ListenId {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{} {} {}", self.0, self.1, self.2)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Listen {

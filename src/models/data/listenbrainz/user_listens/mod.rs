@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use listenbrainz::raw::response::{UserListensListen, UserListensPayload};
 use serde::{Deserialize, Serialize};
 
+use crate::models::cache::traits::has_cache::HasCache;
 use crate::utils::extensions::UserListensPayloadExt;
 
 use super::listen::collection::ListenCollection;
@@ -27,12 +28,13 @@ impl UserListens {
     }
 
     pub fn get_listens(&self) -> ListenCollection {
-        let out = Vec::new();
+        let mut out = Vec::new();
 
         for id in self.listens {
-            
+            out.push(Listen::get_from_cache(&id).expect("The listen should be in the cache"))
         }
-        
+
+        out
     }
 
     pub fn get_user(&self) -> &str {
@@ -40,14 +42,7 @@ impl UserListens {
     }
 
     pub fn get_latest_listen(&self) -> Option<Arc<Listen>> {
-        self.listens.get_latest_listen()
-    }
-
-    /// Insert a listen into the struct.
-    ///
-    /// ⚠️ This doesn't affect the cache ⚠️
-    pub fn insert_listen(&mut self, listen: Listen) {
-        self.listens.push(Arc::new(listen));
+        self.get_listens().get_latest_listen()
     }
 
     /// Remove all the listens in a specific timerange and replace them with payload data.

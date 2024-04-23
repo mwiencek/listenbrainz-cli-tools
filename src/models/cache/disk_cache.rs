@@ -20,7 +20,7 @@ pub struct DiskCacheWrapper<K, V> {
 impl<K, V> DiskCacheWrapper<K, V>
 where
     K: Display + Eq + Hash + Clone,
-    V: Serialize + DeserializeOwned + UpdateCachedEntity,
+    V: Serialize + DeserializeOwned,
 {
     pub fn new(name: &str) -> Self {
         Self {
@@ -34,20 +34,6 @@ where
 
     pub fn set(&self, key: K, value: V) -> Result<Option<V>, DiskCacheError> {
         self.cache.cache_set(key, value)
-    }
-
-    pub fn set_or_update(&self, key: K, value: V) -> Result<Option<V>, DiskCacheError> {
-        let cached = self.cache.cache_get(&key)?;
-
-        let new;
-        if let Some(cached) = cached {
-            new = cached.update_entity(value);
-        } else {
-            new = value;
-        }
-
-        self.cache.cache_remove(&key)?;
-        self.cache.cache_set(key, new)
     }
 
     pub fn get(&self, key: &K) -> Result<Option<V>, DiskCacheError> {
@@ -73,7 +59,7 @@ where
 impl<K, V> DiskCacheWrapper<K, V>
 where
     K: Display + Eq + Hash + Clone,
-    V: Serialize + DeserializeOwned + UpdateCachedEntity + HasFetchApi<K>,
+    V: Serialize + DeserializeOwned + HasFetchApi<K>,
 {
     /// Get an item from the cache, but if it isn't present, fetch the api for it
     ///
@@ -99,5 +85,26 @@ where
     /// ⚠️ Waiting for a permit doesn't cancel the request. It only delays it. If the intention is to only fetch once, see [Self::get_or_fetch]
     pub async fn fetch<'a>(&self, key: &K, _permit: SemaphorePermit<'a>) -> color_eyre::Result<V> {
         V::fetch_and_insert(key).await
+    }
+}
+
+// For updatable entities
+impl<K, V> DiskCacheWrapper<K, V>
+where
+    K: Display + Eq + Hash + Clone,
+    V: Serialize + DeserializeOwned + UpdateCachedEntity,
+{
+    pub fn set_or_update(&self, key: K, value: V) -> Result<Option<V>, DiskCacheError> {
+        let cached = self.cache.cache_get(&key)?;
+
+        let new;
+        if let Some(cached) = cached {
+            new = cached.update_entity(value);
+        } else {
+            new = value;
+        }
+
+        self.cache.cache_remove(&key)?;
+        self.cache.cache_set(key, new)
     }
 }
