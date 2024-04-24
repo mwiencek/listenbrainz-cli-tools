@@ -1,25 +1,28 @@
 //! Contain the code for the "unlisted" command
 use std::cmp::Reverse;
+use std::ops::Div;
 
 use color_eyre::eyre::Context;
-use listenbrainz::raw::response::UserListensListen;
+use itertools::Itertools;
 use listenbrainz::raw::Client;
+use listenbrainz::raw::response::UserListensListen;
+use rust_decimal::Decimal;
 
 use crate::models::cache::global_cache::GlobalCache;
 use crate::models::cli::unmapped::SortBy;
 use crate::models::data::listenbrainz::messy_recording::MessyRecording;
+use crate::utils::{ListenAPIPaginatorBuilder, println_cli};
 use crate::utils::cli_paging::CLIPager;
-use crate::utils::{println_cli, ListenAPIPaginatorBuilder};
 
 pub fn unmapped_command(username: &str, sort: Option<SortBy>) {
     println_cli(format!("Fetching unmapped for user {}", username));
-    let unlinked = GlobalCache::new()
+    let listens = GlobalCache::new()
         .get_user_listens_with_refresh(username)
-        .expect("Couldn't fetch the new listens")
-        .get_unmapped_listens();
+        .expect("Couldn't fetch the new listens");
+    let unlinked = listens.get_unmapped_listens();
 
     let mut messy_recordings: Vec<MessyRecording> = vec![];
-    let unlinked_count = unlinked.len();
+    let unlinked_count: Decimal = Decimal::from(unlinked.len());
 
     // We put all the listens in a MessyBrain recordings
     for listen in unlinked {
@@ -49,7 +52,31 @@ pub fn unmapped_command(username: &str, sort: Option<SortBy>) {
 
     let mut pager = CLIPager::new(5);
 
-    println!("Total: {} unmapped recordings", unlinked_count);
+    let total_percent = (unlinked_count.div(Decimal::from(listens.len()))) * Decimal::new(100, 0);
+    let total_unique_percent = (unlinked_count.div(
+        Decimal::from(
+            listens
+                .get_mapped_listens()
+                .iter()
+                .unique_by(|listen| {
+                    listen
+                        .get_mapping_data()
+                        .as_ref()
+                        .unwrap()
+                        .recording_mbid
+                        .clone()
+                })
+                .collect_vec()
+                .len(),
+        ) + unlinked_count,
+    )) * Decimal::new(100, 0);
+
+    println!(
+        "Total: {} unmapped recordings ({}% of all listens, {}% of all unique listens",
+        unlinked_count,
+        total_percent.trunc_with_scale(2),
+        total_unique_percent.trunc_with_scale(2)
+    );
     for record in messy_recordings.iter() {
         let pager_continue = pager.execute(|| {
             println!(
