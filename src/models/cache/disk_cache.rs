@@ -7,13 +7,13 @@ use color_eyre::eyre::Context;
 use serde::{de::DeserializeOwned, Serialize};
 use tokio::sync::{Semaphore, SemaphorePermit};
 
-use crate::models::api::FetchAPI;
+use crate::{models::api::FetchAPI, utils::cacache::disk_cacache::SerdeCacache};
 
 use super::{traits::merge::UpdateCachedEntity, CACHE_LOCATION};
 use std::hash::Hash;
 
 pub struct DiskCacheWrapper<K, V> {
-    cache: DiskCache<K, V>,
+    cache: SerdeCacache<K, V>,
     watch_cache: CHashMap<K, Arc<Semaphore>>,
 }
 
@@ -23,21 +23,21 @@ where
     V: Serialize + DeserializeOwned + UpdateCachedEntity + FetchAPI<K, V>,
 {
     pub fn new(name: &str) -> Self {
+        let mut location = CACHE_LOCATION.clone();
+        location.push(name);
         Self {
-            cache: DiskCache::new(name)
-                .set_disk_directory(CACHE_LOCATION.clone())
-                .build()
-                .unwrap(),
+            cache: SerdeCacache::new(location),
             watch_cache: CHashMap::new(),
         }
     }
 
-    pub fn set(&self, key: K, value: V) -> Result<Option<V>, DiskCacheError> {
-        self.cache.cache_set(key, value)
+    pub async fn set(&self, key: &K, value: &V) -> color_eyre::Result<()> {
+        self.cache.set(key, &value).await?;
+        Ok(())
     }
 
-    pub fn set_or_update(&self, key: K, value: V) -> Result<Option<V>, DiskCacheError> {
-        let cached = self.cache.cache_get(&key)?;
+    pub async fn set_or_update(&self, key: &K, value: &V) -> Result<Option<V>, DiskCacheError> {
+        let cached = self.cache.get(&key).await?;
 
         let new;
         if let Some(cached) = cached {
@@ -46,7 +46,6 @@ where
             new = value;
         }
 
-        self.cache.cache_remove(&key)?;
         self.cache.cache_set(key, new)
     }
 

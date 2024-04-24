@@ -1,3 +1,4 @@
+pub mod cacache;
 use color_eyre::owo_colors::OwoColorize;
 use derive_builder::Builder;
 use indicatif::ProgressBar;
