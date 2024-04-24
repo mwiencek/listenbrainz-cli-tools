@@ -2,9 +2,11 @@ use crate::models::api::FetchAPI;
 
 use color_eyre::eyre::{eyre, Context, OptionExt};
 use color_eyre::Result;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 use super::artist_credit::collection::ArtistCredits;
+use super::relation::Relation;
 use super::HasMbid;
 
 pub mod caching;
@@ -40,6 +42,7 @@ pub struct Recording {
     pub id: String,
     pub title: String,
     pub artist_credit: Option<ArtistCredits>,
+    pub relations: Option<Vec<Relation>>
 }
 
 impl From<musicbrainz_rs::entity::recording::Recording> for Recording {
@@ -48,6 +51,7 @@ impl From<musicbrainz_rs::entity::recording::Recording> for Recording {
             id: recording.id,
             title: recording.title,
             artist_credit: recording.artist_credit.map(|coll| coll.into()),
+            relations: recording.relations.map(|relations| relations.into_iter().map(|relation| Relation::from(relation)).collect_vec())
         }
     }
 }

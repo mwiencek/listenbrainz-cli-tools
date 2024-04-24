@@ -1,3 +1,4 @@
+pub mod converters;
 pub mod caching;
 use std::collections::HashMap;
 
@@ -5,7 +6,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use crate::models::data::musicbrainz::EntityMBIDType::EntityMBIDType;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct Relation {
     end: Option<DateTime<Utc>>,
     attributes: Option<Vec<String>>,

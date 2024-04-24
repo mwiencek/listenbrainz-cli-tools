@@ -1,3 +1,4 @@
+pub mod entity_type;
 pub mod EntityMBIDType;
 pub mod relation;
 use std::ops::Deref;
