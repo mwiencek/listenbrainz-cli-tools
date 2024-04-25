@@ -2,30 +2,36 @@ use color_eyre::eyre::{Context, Ok};
 use musicbrainz_rs::entity::artist::Artist as ArtistMS;
 use musicbrainz_rs::Fetch;
 
-use crate::models::api::FetchAPI;
-use crate::models::cache::cached_trait::CacheFromMusicbrainzAutoId;
-use crate::models::cache::global_cache::GlobalCache;
+use crate::models::api::api_return::ApiReturn;
+use crate::models::data::entity_traits::fetchable::Fetchable;
+use crate::models::data::entity_traits::has_cache::HasCache;
 use crate::models::data::musicbrainz::artist::Artist;
 use crate::utils::println_mus;
 
-impl FetchAPI<String, Artist> for Artist {
-    fn fetch_and_insert(
-        key: &String,
-    ) -> impl std::future::Future<Output = color_eyre::Result<Artist>> {
-        let key = key.clone();
-        async move {
-            println_mus(format!("Getting data for artist MBID: {}", &key));
-            let msreturn = ArtistMS::fetch()
-                .id(&key)
-                .with_recordings()
-                .execute()
-                .await
-                .context("Failed to fetch artist from MusicBrainz")?;
+impl ApiReturn for ArtistMS {
+    fn to_entities(self) -> Vec<Box<impl crate::models::data::entity_traits::has_cache::HasCache<dyn std::fmt::Display>>> {
+        let new_artist = Artist::from(self.clone());
+        let out: Vec<Box<dyn HasCache>> = vec![Box::new(new_artist)];
 
-            Self::insert_ms_into_cache(msreturn)?;
-
-            // The element have been inserted above, so it should be safe to unwrap the option
-            Ok(GlobalCache::new().get_artist_cache().get(&key)?.unwrap())
+        if let Some(recordings) = self.recordings {
+            let new_recordings = recordings.into_iter().flat_map(|recording| recording.to_insertables()).collect_vec();
+            out.extend(new_recordings)
         }
+
+        out
+    }
+}
+
+impl Fetchable<String> for Artist {
+    async fn fetch(key: String) -> color_eyre::Result<ArtistMS> {
+        println_mus(format!("Getting data for artist MBID: {}", &key));
+        let msreturn = ArtistMS::fetch()
+            .id(&key)
+            .with_recordings()
+            .execute()
+            .await
+            .context("Failed to fetch artist from MusicBrainz")?;
+
+            msreturn;
     }
 }

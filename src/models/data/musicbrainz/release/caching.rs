@@ -14,8 +14,11 @@ use super::{media::Media, Release};
 use musicbrainz_rs::entity::release::Release as ReleaseMS;
 
 impl CacheFromMusicbrainz<ReleaseMS> for Release {
-    fn insert_ms_with_id_into_cache(mbid: String, value: ReleaseMS) -> color_eyre::Result<()> {
-        Self::set_or_update(mbid, value.clone().into())?;
+    async fn insert_ms_with_id_into_cache(
+        mbid: String,
+        value: ReleaseMS,
+    ) -> color_eyre::Result<()> {
+        Self::set_or_update(mbid, value.clone().into()).await?;
 
         Media::insert_opt_ext_iter_into_cache(value.media.clone())?;
 

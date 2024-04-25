@@ -1,5 +1,7 @@
+use std::fmt::Display;
 use std::sync::Arc;
 
+use itertools::Itertools;
 use musicbrainz_rs::entity::artist::Artist as ArtistMS;
 
 use crate::models::cache::cached_trait::{CacheFromMusicbrainz, CacheFromMusicbrainzAutoId};

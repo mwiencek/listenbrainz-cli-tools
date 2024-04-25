@@ -24,7 +24,7 @@ impl FetchAPI<String, Recording> for Recording {
                 .await
                 .context("Failed to fetch recording from MusicBrainz")?;
 
-            Self::insert_ms_with_alias_into_cache(key.to_string(), msreturn)?;
+            Self::insert_ms_with_alias_into_cache(key.to_string(), msreturn).await?;
 
             // The element have been inserted above, so it should be safe to unwrap the option
             Ok(GlobalCache::new().get_recording(&key)?.unwrap())
