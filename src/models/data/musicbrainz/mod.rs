@@ -1,3 +1,4 @@
+pub mod entity_enum;
 use std::ops::Deref;
 
 pub mod artist;

@@ -2,6 +2,8 @@ use crate::core::entity_traits::cached::Cached;
 use crate::core::entity_traits::has_id::HasID;
 use crate::core::entity_traits::insertable::{Insertable, IsAutoInsertable};
 use crate::core::entity_traits::insertable_children::InsertableWithChildren;
+use crate::core::entity_traits::into_ms_entities::IntoMSEntities;
+use crate::models::data::musicbrainz::entity_enum::MSEntity;
 use musicbrainz_rs::entity::artist::Artist;
 
 impl HasID for Artist {
@@ -35,5 +37,17 @@ impl InsertableWithChildren for Artist {
         }
 
         Ok(())
+    }
+}
+
+impl IntoMSEntities for Artist {
+    fn into_ms_entities(self) -> Vec<MSEntity> {
+        let mut results = vec![MSEntity::Artist(self.clone().into())];
+
+        results.extend(self.recordings.into_ms_entities());
+        results.extend(self.releases.into_ms_entities());
+        results.extend(self.release_groups.into_ms_entities());
+
+        results
     }
 }

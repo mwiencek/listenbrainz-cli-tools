@@ -2,6 +2,8 @@ use crate::core::entity_traits::cached::Cached;
 use crate::core::entity_traits::has_id::HasID;
 use crate::core::entity_traits::insertable::{Insertable, IsAutoInsertable};
 use crate::core::entity_traits::insertable_children::InsertableWithChildren;
+use crate::core::entity_traits::into_ms_entities::IntoMSEntities;
+use crate::models::data::musicbrainz::entity_enum::MSEntity;
 use musicbrainz_rs::entity::release_group::ReleaseGroup;
 
 impl HasID for ReleaseGroup {
@@ -29,5 +31,16 @@ impl InsertableWithChildren for ReleaseGroup {
         }
 
         Ok(())
+    }
+}
+
+impl IntoMSEntities for ReleaseGroup {
+    fn into_ms_entities(self) -> Vec<MSEntity> {
+        let mut results = vec![MSEntity::ReleaseGroup(self.clone().into())];
+
+        results.extend(self.artist_credit.into_ms_entities());
+        results.extend(self.releases.into_ms_entities());
+
+        results
     }
 }
