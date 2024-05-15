@@ -41,6 +41,8 @@ derive_more = { version = "0.99.17" }
 derive-new = "0.6.0"
 derive-getters = "0.4.0"
 rust_decimal_macros = "1.34.2"
+vec1 = "1.12.0"
+timespan = { version = "0.2.1", features = ["serde"] }
 
 # The profile that 'cargo dist' will build with
 [profile.dist]

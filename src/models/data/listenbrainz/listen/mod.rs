@@ -12,6 +12,9 @@ pub mod collection;
 pub mod convertion;
 mod mapped_listen;
 
+/// (User, msid, listened at)
+pub type ListenID = (String, String, DateTime<Utc>);
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Listen {
     /// The username of the user who listened to it
@@ -83,5 +86,9 @@ impl Listen {
             .context("Listenbrainz returned an error")?;
 
         Ok(())
+    }
+
+    pub fn get_id(&self) -> ListenID {
+        (self.user.clone(), self.messybrainz_data.msid, self.listened_at)
     }
 }
