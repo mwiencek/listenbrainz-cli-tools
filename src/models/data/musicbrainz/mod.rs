@@ -1,3 +1,4 @@
+pub mod enums;
 use std::ops::Deref;
 
 pub mod artist;

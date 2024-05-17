@@ -1,3 +1,4 @@
+pub mod musicbrainz;
 pub mod playlist;
 use derive_builder::Builder;
 use listenbrainz::raw::response::{UserListensListen, UserListensResponse};
