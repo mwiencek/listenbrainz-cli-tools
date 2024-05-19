@@ -1,9 +1,17 @@
 use extend::ext;
+use crate::models::data::entity_database::{ENTITY_DATABASE, EntityDatabase};
 
 pub trait MBID<T> {
     fn get_or_fetch_entity(
         &self,
     ) -> impl std::future::Future<Output = color_eyre::Result<T>> + Send;
+    
+    fn get_main_alias(&self) -> impl std::future::Future<Output = color_eyre::Result<Self>> + Send {
+        async {
+            ENTITY_DATABASE.mbid_aliases().clone().
+        }
+    }
+    
 }
 
 #[ext]

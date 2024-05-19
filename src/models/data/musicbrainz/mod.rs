@@ -5,6 +5,7 @@ pub mod artist_credit;
 pub mod recording;
 pub mod release;
 pub mod release_group;
+pub mod mbid;
 
 /// Type of the entity having this MBID
 #[derive(Debug, Clone, Copy)]

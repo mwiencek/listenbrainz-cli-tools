@@ -7,13 +7,12 @@ use serde::Serialize;
 use tokio::sync::{Semaphore, SemaphorePermit};
 
 use crate::core::caching::CACHE_LOCATION;
+use crate::core::caching::serde_cacache::error::Error;
 use crate::core::entity_traits::fetchable::Fetchable;
 use crate::core::entity_traits::insertable::Insertable;
 use crate::core::entity_traits::updatable::Updatable;
 
 use super::serde_cacache::tidy::SerdeCacacheTidy;
-
-use crate::core::caching::serde_cacache::error::Error;
 
 #[derive(Debug)]
 pub struct EntityCache<V> {
